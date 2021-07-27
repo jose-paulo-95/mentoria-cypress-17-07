@@ -3,7 +3,7 @@
 
 //https://docs.cypress.io/api/commands/click#Syntax
 
-const faker = require('faker')
+const faker = require('faker-br')
 
 
 let cadastro = {

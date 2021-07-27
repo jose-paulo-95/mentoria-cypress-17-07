@@ -1,14 +1,4 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
+
 
 Cypress.Commands.add('realizaCadastro', (cadastro) => {
 
@@ -69,23 +59,15 @@ Cypress.Commands.add('iniciarCadastro', (email) => {
     //@todo colocar uma validação se o eelemento está visivel
 
      cy.get('#id_gender1').check()
-
      cy.get('#customer_firstname').type(cadastro.firstName)
-
      cy.get('#customer_lastname').type(cadastro.lastName)
-
      cy.get('#passwd').type(cadastro.password)
-
      cy.get('#address1').type(cadastro.streetName)
-
      cy.get('#city').type(cadastro.city)
-
      cy.get('#id_state').select('Arizona')
-
      cy.get('#postcode').type(cadastro.zipcode)
-
      cy.get('#phone_mobile').type(cadastro.mobilePhone)
-
+     cy.get('#submitAccount').click()
 
 
  })
@@ -93,15 +75,4 @@ Cypress.Commands.add('iniciarCadastro', (email) => {
 
 
 
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
