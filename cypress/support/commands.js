@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 const CadastroElements = require('../support/elements/cadastro.elements')
+const CadastroPage = require('../support/Pages/cadastro.page')
 
 Cypress.Commands.add('realizaCadastro', (cadastro) => {
 
@@ -24,46 +25,40 @@ Cypress.Commands.add('iniciarCadastro', (email) => {
     cy.intercept('**index.php')
         .as('rota-formulario')
 
-        CadastroElements.inputEmail().as('input-email').type(email).blur()
-        CadastroElements.validEmail().then((element) => {
-            expect(element).class('form-ok')
-        })
+    CadastroElements.inputEmail().as('input-email').type(email).blur()
+    CadastroElements.validEmail().then((element) => {
+        expect(element).class('form-ok')
+    })
         .get('@input-email').type('{enter}')
         .url().should('contain', CadastroElements.urlIniciarCadastro())
         .wait('@rota-formulario').its('response.statusCode').should('equal', 200)
-        // O invoke ele chama uma funcao jquery no elmento que foi capturado anteriomente
-        // 'text'  : Ele pega o valor do  texto entre tags HTML
-        // 'val'    : Pega o valor do atributo value da tag HTML
-        CadastroElements.inputEmailForm().invoke('val').should('be.equal', email)
- })
+    // O invoke ele chama uma funcao jquery no elmento que foi capturado anteriomente
+    // 'text'  : Ele pega o valor do  texto entre tags HTML
+    // 'val'    : Pega o valor do atributo value da tag HTML
+    CadastroElements.inputEmailForm().invoke('val').should('be.equal', email)
+})
 
- Cypress.Commands.add('preencherFormulario', (cadastro) => { 
+Cypress.Commands.add('preencherFormulario', (cadastro) => {
 
-    //@todo colocar uma validação se o eelemento está visivel
+    CadastroPage.checkGender("M")
+    CadastroPage.typeFirstName(cadastro.firstName)
+    CadastroElements.lastName().type(cadastro.lastName)
+    CadastroElements.password().type(cadastro.password)
+    CadastroElements.address().type(cadastro.streetName)
+    CadastroElements.city().type(cadastro.city)
+    CadastroElements.state().select('Arizona')
+    CadastroElements.postCode().type(cadastro.zipcode)
+    CadastroElements.phoneMobile().type(cadastro.mobilePhone)
 
-     cy.get('#id_gender1').check()
-     cy.get('#customer_firstname').type(cadastro.firstName)
-     cy.get('#customer_lastname').type(cadastro.lastName)
-     cy.get('#passwd').type(cadastro.password)
-     cy.get('#address1').type(cadastro.streetName)
-     cy.get('#city').type(cadastro.city)
-     cy.get('#id_state').select('Arizona')
-     cy.get('#postcode').type(cadastro.zipcode)
-     cy.get('#phone_mobile').type(cadastro.mobilePhone)
+})
 
- })
-
- Cypress.Commands.add('finalizaFormulario', (cadastro) => {
+Cypress.Commands.add('finalizaFormulario', (cadastro) => {
     cy.intercept('**index.php?controller=my-account')
-    .as('rota-finaliza-cadastro')
+        .as('rota-finaliza-cadastro')
 
-    cy.get('#submitAccount').click()
-      .wait('@rota-finaliza-cadastro').its('response.statusCode').should('equal',200)
-      .get('.account > span').invoke('text').should('equal',`${cadastro.firstName} ${cadastro.lastName}`)
-      .url().should('equal','http://automationpractice.com/index.php?controller=my-account')
+    CadastroElements.registrar().click()
+        .wait('@rota-finaliza-cadastro').its('response.statusCode').should('equal', 200)
+        .get('.account > span').invoke('text').should('equal', `${cadastro.firstName} ${cadastro.lastName}`)
+        .url().should('equal', 'http://automationpractice.com/index.php?controller=my-account')
 
- })
-
-
-
-
+})
