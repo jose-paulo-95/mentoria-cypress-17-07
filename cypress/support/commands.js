@@ -1,4 +1,6 @@
+/// <reference types="cypress" />
 
+const CadastroElements = require('../support/elements/cadastro.elements')
 
 Cypress.Commands.add('realizaCadastro', (cadastro) => {
 
@@ -7,7 +9,7 @@ Cypress.Commands.add('realizaCadastro', (cadastro) => {
 
     cy.preencherFormulario(cadastro)
 
-    // cy.finalizaFormulario(cadastro)
+    cy.finalizaFormulario(cadastro)
 
     //@todo criar o comando personalizado finalizar o formulari
     // Salvar o formulario
@@ -16,45 +18,26 @@ Cypress.Commands.add('realizaCadastro', (cadastro) => {
     // Capturar o nome do usuario logado no canto superior direito e verificar se é o do usuario
 }
 
-
-
-
 )
 // -- This is a parent command --
 Cypress.Commands.add('iniciarCadastro', (email) => {
-
-
     cy.intercept('**index.php')
         .as('rota-formulario')
 
-
-    cy.get('#email_create').as('input-email')
-        .type(email).blur()
-
-        .get("#create-account_form > div > div")
-        .then((element) => {
-
+        CadastroElements.inputEmail().as('input-email').type(email).blur()
+        CadastroElements.validEmail().then((element) => {
             expect(element).class('form-ok')
-
         })
         .get('@input-email').type('{enter}')
-
-        .url().should('contain', '#account-creation')
+        .url().should('contain', CadastroElements.urlIniciarCadastro())
         .wait('@rota-formulario').its('response.statusCode').should('equal', 200)
-
-
         // O invoke ele chama uma funcao jquery no elmento que foi capturado anteriomente
         // 'text'  : Ele pega o valor do  texto entre tags HTML
         // 'val'    : Pega o valor do atributo value da tag HTML
-        .get('#email').invoke('val').should('be.equal', email)
-
-
-
-
+        CadastroElements.inputEmailForm().invoke('val').should('be.equal', email)
  })
 
-
- Cypress.Commands.add('preencherFormulario', (cadastro ={}) => { 
+ Cypress.Commands.add('preencherFormulario', (cadastro) => { 
 
     //@todo colocar uma validação se o eelemento está visivel
 
@@ -67,11 +50,19 @@ Cypress.Commands.add('iniciarCadastro', (email) => {
      cy.get('#id_state').select('Arizona')
      cy.get('#postcode').type(cadastro.zipcode)
      cy.get('#phone_mobile').type(cadastro.mobilePhone)
-     cy.get('#submitAccount').click()
-
 
  })
 
+ Cypress.Commands.add('finalizaFormulario', (cadastro) => {
+    cy.intercept('**index.php?controller=my-account')
+    .as('rota-finaliza-cadastro')
+
+    cy.get('#submitAccount').click()
+      .wait('@rota-finaliza-cadastro').its('response.statusCode').should('equal',200)
+      .get('.account > span').invoke('text').should('equal',`${cadastro.firstName} ${cadastro.lastName}`)
+      .url().should('equal','http://automationpractice.com/index.php?controller=my-account')
+
+ })
 
 
 

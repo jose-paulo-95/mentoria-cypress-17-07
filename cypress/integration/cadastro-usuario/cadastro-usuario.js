@@ -33,6 +33,7 @@ describe('Cadastro de Usuario', () => {
 
 
         cy.realizaCadastro(cadastro)
+        
         // @todo Finalizar o cadastro !
 
 
